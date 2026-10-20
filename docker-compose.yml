@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      PORT: "3000"
+      DB_PATH: /app/data/app.db
+      JWT_SECRET: dev-compose-secret
+      ADMIN_PASSWORD: admin123
+    volumes:
+      - salones-data:/app/data
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: /api
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  salones-data:

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: alumno-team5
+  labels:
+    app: salones
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: salones
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: salones
+        component: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: joaquinballara/salones-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: BACKEND_URL
+              value: http://backend:3000
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: alumno-team5
+spec:
+  selector:
+    app: salones
+    component: frontend
+  ports:
+    - port: 80
+      targetPort: 80
